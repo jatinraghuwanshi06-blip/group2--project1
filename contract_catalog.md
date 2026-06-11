@@ -1,0 +1,1 @@
+Contract Catalog NDA Used for protecting confidential information. Employment Agreement Defines terms between employer and employee. Service Agreement Defines services and responsibilities. Lease Agreement Defines rental terms and conditions. Consulting Agreement Defines consulting work and payment terms.
