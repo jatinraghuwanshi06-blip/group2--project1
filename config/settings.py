@@ -80,7 +80,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'legaltech_db',
         'USER': 'postgres',
-        'PASSWORD': 'jatin9131',
+        'PASSWORD': '123',
         'HOST': 'localhost',
         'PORT': '5432',
     }
