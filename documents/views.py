@@ -1,4 +1,5 @@
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 
 from .models import Document, ExtractedClause, RiskFlag
@@ -19,27 +20,24 @@ class DocumentUploadView(generics.CreateAPIView):
     serializer_class = DocumentSerializer
     parser_classes = [MultiPartParser, FormParser]
 
-    def perform_create(self, serializer):
-        # Save uploaded document
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         document = serializer.save()
 
-        # Extract text from PDF
         raw_text = extract_text_from_pdf(document.pdf_file.path)
-
-        # Clean extracted text
         clean_text = clean_extracted_text(raw_text)
-        companies = extract_companies(clean_text)
-        dates = extract_dates(clean_text)
-        governing_law = detect_governing_law(clean_text)
-        clauses = detect_clause_types(clean_text)
-        risks = detect_risks(clean_text)
 
-        # Save extracted text
         document.extracted_text = clean_text
         document.save()
 
-        # Detect clause types
+        companies = extract_companies(clean_text)
+        dates = extract_dates(clean_text)
+        governing_law = detect_governing_law(clean_text)
+
         clauses = detect_clause_types(clean_text)
+        risks = detect_risks(clean_text)
 
         for clause in clauses:
             ExtractedClause.objects.create(
@@ -48,9 +46,6 @@ class DocumentUploadView(generics.CreateAPIView):
                 clause_text=clean_text
             )
 
-        # Detect risks
-        risks = detect_risks(clean_text)
-
         for risk in risks:
             RiskFlag.objects.create(
                 document=document,
@@ -58,8 +53,15 @@ class DocumentUploadView(generics.CreateAPIView):
                 description=risk["keyword"]
             )
 
-        print("Companies:", companies)
-        print("Dates:", dates)
-        print("Governing Law:", governing_law)
-        print("Clauses:", clauses)
-        print("Risks:", risks)
+        response_serializer = DocumentSerializer(document)
+
+        return Response(
+            {
+                "message": "Document processed successfully",
+                "companies": companies,
+                "dates": dates,
+                "governing_law": governing_law,
+                "document": response_serializer.data,
+            },
+            status=status.HTTP_201_CREATED,
+        )
