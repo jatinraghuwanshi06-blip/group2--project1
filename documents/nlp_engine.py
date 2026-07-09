@@ -88,15 +88,30 @@ def detect_risks(text):
     risk_keywords = {
         "High": [
             "indemnify",
+            "indemnification",
             "unlimited liability",
             "exclusive",
             "penalty",
-            "breach"
+            "breach",
+            "terminate immediately",
+            "without notice"
+        ],
+        "Medium": [
+            "confidential",
+            "damages",
+            "liable",
+            "termination",
+            "non-disclosure"
+        ],
+        "Low": [
+            "payment",
+            "invoice",
+            "fee",
+            "agreement"
         ]
     }
 
     detected_risks = []
-
     text_lower = text.lower()
 
     for level, keywords in risk_keywords.items():

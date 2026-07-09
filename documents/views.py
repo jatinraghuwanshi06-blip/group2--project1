@@ -52,7 +52,33 @@ class DocumentUploadView(generics.CreateAPIView):
                 risk_level=risk["risk_level"],
                 description=risk["keyword"]
             )
+        print("\n" + "=" * 60)
+        print("📄 DOCUMENT ANALYSIS RESULTS")
+        print("=" * 60)
+        
+        print("\n🏢 Companies:")
+        for company in companies:        
+            print(f"  • {company}")
+        
+        print("\n📅 Dates:")
+        for date in dates:
+            print(f"  • {date}")
+        
+        print("\n⚖️ Governing Law:")
+        print(f"  {governing_law}")
+        
+        print("\n📑 Clauses:")
+        for clause in clauses:
+            print(f"  • {clause}")
+        
+        print("\n🚩 Risks Detected:")
+        if risks:
+          for i, risk in enumerate(risks, start=1):
+             print(f"  {i}. [{risk['risk_level']}] {risk['keyword']}")
+        else:
+            print("  No risks detected.")
 
+        
         response_serializer = DocumentSerializer(document)
 
         return Response(
